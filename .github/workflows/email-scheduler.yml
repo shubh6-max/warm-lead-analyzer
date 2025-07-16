@@ -1,9 +1,9 @@
-name: ⏰ Send Emails at 11:34 PM IST
+name: ⏰ Send Emails Every 5 Minutes
 
 on:
   schedule:
-    - cron: "31 18 * * *"  # 11:34 PM IST = 18:04 UTC
-  workflow_dispatch:      # Optional: allow manual trigger
+    - cron: "*/5 * * * *"  # Runs every 5 minutes
+  workflow_dispatch:        # Optional: manual trigger
 
 jobs:
   send-emails:
@@ -29,4 +29,3 @@ jobs:
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
           SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
-
