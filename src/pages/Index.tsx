@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LeadCard, Lead } from "@/components/LeadCard";
-import { mockLeads } from "@/data/mockLeads";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import mathcoLogo from "@/assets/mathco-logo.png";
@@ -12,30 +12,66 @@ const Index = () => {
   const [leads, setLeads] = useState<Lead[]>([]);
   const [responses, setResponses] = useState<Record<string, { score: string; comment: string }>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
   useEffect(() => {
-    // Get email from URL params
-    const urlParams = new URLSearchParams(window.location.search);
-    const email = urlParams.get("email");
-    setStakeholderEmail(email);
+    const fetchLeads = async () => {
+      // Get email from URL params
+      const urlParams = new URLSearchParams(window.location.search);
+      const email = urlParams.get("email");
+      setStakeholderEmail(email);
 
-    if (email) {
-      // Filter leads for this stakeholder that are not done
-      const filteredLeads = mockLeads.filter(
-        lead => lead.stakeholderEmail.toLowerCase().includes(email.toLowerCase()) && 
-                lead.status === "not done"
-      );
-      setLeads(filteredLeads);
+      if (email) {
+        try {
+          // Fetch leads from Supabase
+          const { data, error } = await supabase
+            .from('leads_with_status')
+            .select('*')
+            .ilike('Leadership contact email', `%${email}%`)
+            .eq('Status', 'not done');
 
-      // Initialize responses
-      const initialResponses: Record<string, { score: string; comment: string }> = {};
-      filteredLeads.forEach(lead => {
-        initialResponses[lead.id] = { score: "", comment: "" };
-      });
-      setResponses(initialResponses);
-    }
-  }, []);
+          if (error) {
+            console.error('Error fetching leads:', error);
+            toast({
+              title: "Error",
+              description: "Failed to load leads. Please try again.",
+              variant: "destructive",
+            });
+            return;
+          }
+
+          // Map Supabase data to Lead interface
+          const mappedLeads: Lead[] = (data || []).map(row => ({
+            id: row.id.toString(),
+            name: row["Target Lead Name"] || "",
+            title: row["Target Lead Title"] || "",
+            company: row["Company Name"] || "",
+            linkedinUrl: row["Target Lead Linkedin URL"] || ""
+          }));
+
+          setLeads(mappedLeads);
+
+          // Initialize responses
+          const initialResponses: Record<string, { score: string; comment: string }> = {};
+          mappedLeads.forEach(lead => {
+            initialResponses[lead.id] = { score: "", comment: "" };
+          });
+          setResponses(initialResponses);
+        } catch (error) {
+          console.error('Error:', error);
+          toast({
+            title: "Error",
+            description: "Failed to load leads. Please try again.",
+            variant: "destructive",
+          });
+        }
+      }
+      setIsLoading(false);
+    };
+
+    fetchLeads();
+  }, [toast]);
 
   const handleScoreChange = (leadId: string, score: string) => {
     setResponses(prev => ({
@@ -86,6 +122,17 @@ const Index = () => {
       setIsSubmitting(false);
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading leads...</p>
+        </div>
+      </div>
+    );
+  }
 
   if (!stakeholderEmail) {
     return (
