@@ -29,7 +29,7 @@ const Index = () => {
             .from('leads_with_status')
             .select('*')
             .ilike('Leadership contact email', `%${email}%`)
-            .eq('Status', 'not done');
+            .eq('Status', 'Not Done');
 
           if (error) {
             console.error('Error fetching leads:', error);
