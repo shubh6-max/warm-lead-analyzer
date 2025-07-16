@@ -1,1 +1,32 @@
+name: ⏰ Send Emails at 11:34 PM IST
+
+on:
+  schedule:
+    - cron: "4 18 * * *"  # 11:34 PM IST = 18:04 UTC
+  workflow_dispatch:      # Optional: allow manual trigger
+
+jobs:
+  send-emails:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v3
+
+      - name: 🐍 Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: 📦 Install dependencies
+        run: |
+          pip install pandas openpyxl supabase python-dotenv
+
+      - name: 🚀 Run send_mails.py
+        run: python send_mails.py
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
+          SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+          SENDER_PASSWORD: ${{ secrets.SENDER_PASSWORD }}
 
