@@ -1,9 +1,9 @@
-name: ⏰ Send Emails Every 5 Minutes
+name: ⏰ Send Emails Daily at 10:00 AM IST
 
 on:
   schedule:
-    - cron: "*/5 * * * *"  # Runs every 5 minutes (UTC)
-  workflow_dispatch:        # Allows manual trigger from GitHub UI
+    - cron: "30 4 * * *"  # 10:00 AM IST = 04:30 UTC
+  workflow_dispatch:        # Optional: allows manual trigger
 
 jobs:
   send-emails:
