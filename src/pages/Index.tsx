@@ -102,8 +102,28 @@ const Index = () => {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Save responses to Supabase
+      const scoreColumn = `${stakeholderEmail}_Score`;
+      const commentColumn = `${stakeholderEmail}_Comment`;
+
+      // Update each lead with responses
+      for (const lead of leads) {
+        const response = responses[lead.id];
+        
+        const { error } = await supabase
+          .from('leads_with_status')
+          .update({
+            [scoreColumn]: response.score,
+            [commentColumn]: response.comment,
+            Status: 'Done'
+          })
+          .eq('id', parseInt(lead.id));
+
+        if (error) {
+          console.error('Error updating lead:', error);
+          throw error;
+        }
+      }
       
       toast({
         title: "Responses Recorded",
@@ -113,6 +133,7 @@ const Index = () => {
       // Reset form
       setLeads([]);
     } catch (error) {
+      console.error('Submit error:', error);
       toast({
         title: "Error",
         description: "Failed to submit responses. Please try again.",
