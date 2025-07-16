@@ -2,7 +2,7 @@ name: ⏰ Send Emails at 11:34 PM IST
 
 on:
   schedule:
-    - cron: "56 18 * * *"  # 11:34 PM IST = 18:04 UTC
+    - cron: "31 18 * * *"  # 11:34 PM IST = 18:04 UTC
   workflow_dispatch:      # Optional: allow manual trigger
 
 jobs:
