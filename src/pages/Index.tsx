@@ -24,12 +24,9 @@ const Index = () => {
 
       if (email) {
         try {
-          // Fetch leads from Supabase
+          // Use the new database function to get leads for this stakeholder
           const { data, error } = await supabase
-            .from('leads_with_status')
-            .select('*')
-            .ilike('Leadership contact email', `%${email}%`)
-            .eq('Status', 'Not Done');
+            .rpc('get_leads_for_stakeholder', { p_email: email });
 
           if (error) {
             console.error('Error fetching leads:', error);
@@ -41,21 +38,24 @@ const Index = () => {
             return;
           }
 
-          // Map Supabase data to Lead interface
+          // Map function data to Lead interface
           const mappedLeads: Lead[] = (data || []).map(row => ({
-            id: row.id.toString(),
-            name: row["Target Lead Name"] || "",
-            title: row["Target Lead Title"] || "",
-            company: row["Company Name"] || "",
-            linkedinUrl: row["Target Lead Linkedin URL"] || ""
+            id: row.lead_id.toString(),
+            name: row.target_lead_name || "",
+            title: row.target_lead_title || "",
+            company: row.company_name || "",
+            linkedinUrl: row.target_lead_url || ""
           }));
 
           setLeads(mappedLeads);
 
-          // Initialize responses
+          // Initialize responses with existing data if available
           const initialResponses: Record<string, { score: string; comment: string }> = {};
-          mappedLeads.forEach(lead => {
-            initialResponses[lead.id] = { score: "", comment: "" };
+          data?.forEach(row => {
+            initialResponses[row.lead_id.toString()] = { 
+              score: row.existing_score ? row.existing_score.toString() : "", 
+              comment: row.existing_comment || "" 
+            };
           });
           setResponses(initialResponses);
         } catch (error) {
@@ -102,27 +102,38 @@ const Index = () => {
     setIsSubmitting(true);
     
     try {
-      // Save responses to Supabase
-      const scoreColumn = `${stakeholderEmail}_Score`;
-      const commentColumn = `${stakeholderEmail}_Comment`;
-
-      // Update each lead with responses
+      // Save responses to the new stakeholder_responses table
       for (const lead of leads) {
         const response = responses[lead.id];
         
+        // Use upsert to handle both new responses and updates
         const { error } = await supabase
-          .from('leads_with_status')
-          .update({
-            [scoreColumn]: response.score,
-            [commentColumn]: response.comment,
-            Status: 'Done'
-          })
-          .eq('id', parseInt(lead.id));
+          .from('stakeholder_responses')
+          .upsert({
+            lead_id: parseInt(lead.id),
+            stakeholder_email: stakeholderEmail,
+            relationship_score: parseInt(response.score),
+            comment: response.comment || null
+          }, {
+            onConflict: 'lead_id,stakeholder_email'
+          });
 
         if (error) {
-          console.error('Error updating lead:', error);
+          console.error('Error saving response:', error);
           throw error;
         }
+      }
+
+      // Update lead status to 'Done' in the leads table
+      const leadIds = leads.map(lead => parseInt(lead.id));
+      const { error: statusError } = await supabase
+        .from('leads_with_status')
+        .update({ Status: 'Done' })
+        .in('id', leadIds);
+
+      if (statusError) {
+        console.error('Error updating lead status:', statusError);
+        throw statusError;
       }
       
       toast({

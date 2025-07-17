@@ -65,12 +65,101 @@ export type Database = {
         }
         Relationships: []
       }
+      stakeholder_responses: {
+        Row: {
+          comment: string | null
+          id: string
+          lead_id: number
+          relationship_score: number | null
+          stakeholder_email: string
+          submitted_at: string
+        }
+        Insert: {
+          comment?: string | null
+          id?: string
+          lead_id: number
+          relationship_score?: number | null
+          stakeholder_email: string
+          submitted_at?: string
+        }
+        Update: {
+          comment?: string | null
+          id?: string
+          lead_id?: number
+          relationship_score?: number | null
+          stakeholder_email?: string
+          submitted_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stakeholder_responses_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "lead_responses_view"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "stakeholder_responses_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_with_status"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
-      [_ in never]: never
+      lead_responses_view: {
+        Row: {
+          company_name: string | null
+          lead_id: number | null
+          lead_status: string | null
+          leadership_email: string | null
+          relationship_score: number | null
+          relationship_strength: string | null
+          sdr_name: string | null
+          stakeholder_comment: string | null
+          stakeholder_email: string | null
+          submitted_at: string | null
+          target_lead_name: string | null
+          target_lead_title: string | null
+          target_lead_url: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
-      [_ in never]: never
+      add_column_to_table: {
+        Args: { table_name: string; column_name: string; column_type?: string }
+        Returns: boolean
+      }
+      execute_sql: {
+        Args: { sql: string }
+        Returns: boolean
+      }
+      get_leads_for_stakeholder: {
+        Args: { p_email: string }
+        Returns: {
+          lead_id: number
+          target_lead_name: string
+          company_name: string
+          target_lead_title: string
+          target_lead_url: string
+          leadership_email: string
+          lead_status: string
+          sdr_name: string
+          relationship_strength: string
+          existing_score: number
+          existing_comment: string
+        }[]
+      }
+      get_table_columns: {
+        Args: { table_name: string }
+        Returns: {
+          column_name: string
+          data_type: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
