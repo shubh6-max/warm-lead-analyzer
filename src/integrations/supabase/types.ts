@@ -95,7 +95,14 @@ export type Database = {
             foreignKeyName: "stakeholder_responses_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
-            referencedRelation: "lead_responses_view"
+            referencedRelation: "lead_responses_complete"
+            referencedColumns: ["lead_id"]
+          },
+          {
+            foreignKeyName: "stakeholder_responses_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "lead_responses_summary"
             referencedColumns: ["lead_id"]
           },
           {
@@ -109,21 +116,48 @@ export type Database = {
       }
     }
     Views: {
-      lead_responses_view: {
+      lead_responses_complete: {
         Row: {
           company_name: string | null
+          confirmation_status: string | null
           lead_id: number | null
+          lead_last_updated: string | null
           lead_status: string | null
-          leadership_email: string | null
+          leadership_contact_email: string | null
+          relationship_category: string | null
           relationship_score: number | null
           relationship_strength: string | null
+          response_id: string | null
+          response_status: string | null
+          response_submitted_at: string | null
           sdr_name: string | null
           stakeholder_comment: string | null
           stakeholder_email: string | null
-          submitted_at: string | null
+          target_lead_linkedin_url: string | null
           target_lead_name: string | null
           target_lead_title: string | null
-          target_lead_url: string | null
+        }
+        Relationships: []
+      }
+      lead_responses_summary: {
+        Row: {
+          average_score: number | null
+          company_name: string | null
+          highest_score: number | null
+          latest_comment: string | null
+          latest_respondent: string | null
+          latest_response_date: string | null
+          latest_score: number | null
+          lead_id: number | null
+          lead_last_updated: string | null
+          lead_status: string | null
+          leadership_contact_email: string | null
+          lowest_score: number | null
+          relationship_summary: string | null
+          sdr_name: string | null
+          target_lead_name: string | null
+          target_lead_title: string | null
+          total_responses: number | null
         }
         Relationships: []
       }
@@ -136,6 +170,27 @@ export type Database = {
       execute_sql: {
         Args: { sql: string }
         Returns: boolean
+      }
+      get_lead_complete_info: {
+        Args: { p_lead_id: number }
+        Returns: {
+          lead_id: number
+          target_lead_name: string
+          company_name: string
+          target_lead_title: string
+          target_lead_linkedin_url: string
+          leadership_contact_email: string
+          lead_status: string
+          sdr_name: string
+          relationship_strength: string
+          response_id: string
+          stakeholder_email: string
+          relationship_score: number
+          stakeholder_comment: string
+          response_submitted_at: string
+          response_status: string
+          relationship_category: string
+        }[]
       }
       get_leads_for_stakeholder: {
         Args: { p_email: string }
@@ -159,6 +214,10 @@ export type Database = {
           column_name: string
           data_type: string
         }[]
+      }
+      refresh_lead_responses_summary: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
       }
     }
     Enums: {
