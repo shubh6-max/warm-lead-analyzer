@@ -149,8 +149,7 @@ const Index = () => {
         description: "✅ Your responses have been recorded. Thank you!",
       });
 
-      // Reset form
-      setLeads([]);
+      // Don't reset leads - keep them visible with submitted responses
     } catch (error) {
       console.error('Submit error:', error);
       toast({
