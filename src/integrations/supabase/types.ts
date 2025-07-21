@@ -16,7 +16,6 @@ export type Database = {
     Tables: {
       leads_with_status: {
         Row: {
-          Comment: string | null
           "Company Name": string | null
           "Confirmation Status": string | null
           id: number
@@ -24,7 +23,6 @@ export type Database = {
           "Lead ID": number | null
           "Leadership contact email": string | null
           "Relationship Strength": string | null
-          Score: number | null
           "SDR Name": string | null
           Status: string | null
           "Target Lead Linkedin URL": string | null
@@ -32,7 +30,6 @@ export type Database = {
           "Target Lead Title": string | null
         }
         Insert: {
-          Comment?: string | null
           "Company Name"?: string | null
           "Confirmation Status"?: string | null
           id?: number
@@ -40,7 +37,6 @@ export type Database = {
           "Lead ID"?: number | null
           "Leadership contact email"?: string | null
           "Relationship Strength"?: string | null
-          Score?: number | null
           "SDR Name"?: string | null
           Status?: string | null
           "Target Lead Linkedin URL"?: string | null
@@ -48,7 +44,6 @@ export type Database = {
           "Target Lead Title"?: string | null
         }
         Update: {
-          Comment?: string | null
           "Company Name"?: string | null
           "Confirmation Status"?: string | null
           id?: number
@@ -56,7 +51,6 @@ export type Database = {
           "Lead ID"?: number | null
           "Leadership contact email"?: string | null
           "Relationship Strength"?: string | null
-          Score?: number | null
           "SDR Name"?: string | null
           Status?: string | null
           "Target Lead Linkedin URL"?: string | null
