@@ -9,6 +9,7 @@ import mathcoLogo from "@/assets/mathco-logo.png";
 
 const Index = () => {
   const [stakeholderEmail, setStakeholderEmail] = useState<string | null>(null);
+  const [stakeholderName, setStakeholderName] = useState<string>("");
   const [leads, setLeads] = useState<Lead[]>([]);
   const [responses, setResponses] = useState<Record<string, { score: string; comment: string }>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,6 +48,17 @@ const Index = () => {
             return emails.includes(email.toLowerCase());
           });
 
+          // Extract stakeholder name from leadership_name field
+          if (filteredLeads.length > 0) {
+            const firstLead = filteredLeads[0];
+            const emails = (firstLead.leadership_contact_email || "").split(";").map(e => e.trim().toLowerCase());
+            const names = (firstLead.leadership_name || "").split(";").map(n => n.trim());
+            const emailIndex = emails.indexOf(email.toLowerCase());
+            if (emailIndex >= 0 && emailIndex < names.length) {
+              setStakeholderName(names[emailIndex]);
+            }
+          }
+
           // Map data to Lead interface
           const mappedLeads: Lead[] = filteredLeads.map(row => ({
             id: row.lead_id.toString(),
@@ -75,7 +87,7 @@ const Index = () => {
           mappedLeads.forEach(lead => {
             const existingResponse = responsesData?.find(r => r.lead_id === parseInt(lead.id));
             initialResponses[lead.id] = { 
-              score: existingResponse?.relationship_score ? existingResponse.relationship_score.toString() : "", 
+              score: existingResponse?.relationship_score || "", 
               comment: existingResponse?.comment || "" 
             };
           });
@@ -139,7 +151,7 @@ const Index = () => {
           .upsert({
             lead_id: parseInt(lead.id),
             stakeholder_email: stakeholderEmail,
-            relationship_score: parseInt(response.score),
+            relationship_score: response.score,
             comment: response.comment || null
           }, {
             onConflict: 'lead_id,stakeholder_email'
@@ -235,7 +247,7 @@ const Index = () => {
               />
               <div>
                 <h1 className="text-2xl font-bold text-foreground">Warm Outreach Relationship Survey</h1>
-                <p className="text-muted-foreground">Welcome, {stakeholderEmail}</p>
+                <p className="text-muted-foreground">Welcome, {stakeholderName || stakeholderEmail}</p>
               </div>
             </div>
           </div>
