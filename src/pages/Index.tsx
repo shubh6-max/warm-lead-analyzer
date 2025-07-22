@@ -13,6 +13,7 @@ const Index = () => {
   const [responses, setResponses] = useState<Record<string, { score: string; comment: string }>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -28,7 +29,7 @@ const Index = () => {
           const { data: leadsData, error: leadsError } = await supabase
             .from('leads_with_status')
             .select('*')
-            .like('Leadership contact email', `%${email}%`);
+            .like('leadership_contact_email', `%${email}%`);
 
           if (leadsError) {
             console.error('Error fetching leads:', leadsError);
@@ -42,17 +43,17 @@ const Index = () => {
 
           // Filter leads to only include those where the email exactly matches one of the semicolon-separated emails
           const filteredLeads = (leadsData || []).filter(row => {
-            const emails = (row["Leadership contact email"] || "").split(";").map(e => e.trim().toLowerCase());
+            const emails = (row.leadership_contact_email || "").split(";").map(e => e.trim().toLowerCase());
             return emails.includes(email.toLowerCase());
           });
 
           // Map data to Lead interface
           const mappedLeads: Lead[] = filteredLeads.map(row => ({
-            id: row.id.toString(),
-            name: row["Target Lead Name"] || "",
-            title: row["Target Lead Title"] || "",
-            company: row["Company Name"] || "",
-            linkedinUrl: row["Target Lead Linkedin URL"] || ""
+            id: row.lead_id.toString(),
+            name: row.target_lead_name || "",
+            title: row.target_lead_title || "",
+            company: row.company_name || "",
+            linkedinUrl: row.target_lead_linkedin_url || ""
           }));
 
           setLeads(mappedLeads);
@@ -79,6 +80,12 @@ const Index = () => {
             };
           });
           setResponses(initialResponses);
+          
+          // Check if all leads have responses (user has submitted)
+          const allLeadsResponded = mappedLeads.length > 0 && mappedLeads.every(lead => 
+            responsesData?.some(r => r.lead_id === parseInt(lead.id))
+          );
+          setHasSubmitted(allLeadsResponded);
         } catch (error) {
           console.error('Error:', error);
           toast({
@@ -149,7 +156,8 @@ const Index = () => {
         description: "✅ Your responses have been recorded. Thank you!",
       });
 
-      // Don't reset leads - keep them visible with submitted responses
+      // Mark as submitted to prevent form from showing again
+      setHasSubmitted(true);
     } catch (error) {
       console.error('Submit error:', error);
       toast({
@@ -195,6 +203,19 @@ const Index = () => {
           <CheckCircle className="h-16 w-16 text-primary mx-auto mb-4" />
           <h1 className="text-2xl font-bold mb-2">All Caught Up!</h1>
           <p className="text-muted-foreground">✅ You have no pending leads.</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If user has already submitted all responses, show thank you message
+  if (hasSubmitted) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="max-w-md w-full text-center">
+          <CheckCircle className="h-16 w-16 text-primary mx-auto mb-4" />
+          <h1 className="text-2xl font-bold mb-2">Thank You!</h1>
+          <p className="text-muted-foreground">✅ Your responses have been recorded successfully.</p>
         </div>
       </div>
     );

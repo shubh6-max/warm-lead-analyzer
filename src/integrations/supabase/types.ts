@@ -16,46 +16,40 @@ export type Database = {
     Tables: {
       leads_with_status: {
         Row: {
-          "Company Name": string | null
-          "Confirmation Status": string | null
-          id: number
-          Last_Updated: string | null
-          "Lead ID": number | null
-          "Leadership contact email": string | null
-          "Relationship Strength": string | null
-          "SDR Name": string | null
-          Status: string | null
-          "Target Lead Linkedin URL": string | null
-          "Target Lead Name": string | null
-          "Target Lead Title": string | null
+          company_name: string | null
+          lead_id: number
+          leadership_contact_email: string | null
+          leadership_name: string | null
+          sdr_name: string | null
+          status: string | null
+          sync_status: string | null
+          target_lead_linkedin_url: string | null
+          target_lead_name: string | null
+          target_lead_title: string | null
         }
         Insert: {
-          "Company Name"?: string | null
-          "Confirmation Status"?: string | null
-          id?: number
-          Last_Updated?: string | null
-          "Lead ID"?: number | null
-          "Leadership contact email"?: string | null
-          "Relationship Strength"?: string | null
-          "SDR Name"?: string | null
-          Status?: string | null
-          "Target Lead Linkedin URL"?: string | null
-          "Target Lead Name"?: string | null
-          "Target Lead Title"?: string | null
+          company_name?: string | null
+          lead_id: number
+          leadership_contact_email?: string | null
+          leadership_name?: string | null
+          sdr_name?: string | null
+          status?: string | null
+          sync_status?: string | null
+          target_lead_linkedin_url?: string | null
+          target_lead_name?: string | null
+          target_lead_title?: string | null
         }
         Update: {
-          "Company Name"?: string | null
-          "Confirmation Status"?: string | null
-          id?: number
-          Last_Updated?: string | null
-          "Lead ID"?: number | null
-          "Leadership contact email"?: string | null
-          "Relationship Strength"?: string | null
-          "SDR Name"?: string | null
-          Status?: string | null
-          "Target Lead Linkedin URL"?: string | null
-          "Target Lead Name"?: string | null
-          "Target Lead Title"?: string | null
+          company_name?: string | null
+          lead_id?: number
+          leadership_contact_email?: string | null
+          leadership_name?: string | null
+          sdr_name?: string | null
+          status?: string | null
+          sync_status?: string | null
+          target_lead_linkedin_url?: string | null
+          target_lead_name?: string | null
+          target_lead_title?: string | null
         }
         Relationships: []
       }
@@ -64,7 +58,7 @@ export type Database = {
           comment: string | null
           id: string
           lead_id: number
-          relationship_score: number | null
+          relationship_score: number
           stakeholder_email: string
           submitted_at: string
         }
@@ -72,7 +66,7 @@ export type Database = {
           comment?: string | null
           id?: string
           lead_id: number
-          relationship_score?: number | null
+          relationship_score: number
           stakeholder_email: string
           submitted_at?: string
         }
@@ -80,81 +74,15 @@ export type Database = {
           comment?: string | null
           id?: string
           lead_id?: number
-          relationship_score?: number | null
+          relationship_score?: number
           stakeholder_email?: string
           submitted_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "stakeholder_responses_lead_id_fkey"
-            columns: ["lead_id"]
-            isOneToOne: false
-            referencedRelation: "lead_responses_complete"
-            referencedColumns: ["lead_id"]
-          },
-          {
-            foreignKeyName: "stakeholder_responses_lead_id_fkey"
-            columns: ["lead_id"]
-            isOneToOne: false
-            referencedRelation: "lead_responses_summary"
-            referencedColumns: ["lead_id"]
-          },
-          {
-            foreignKeyName: "stakeholder_responses_lead_id_fkey"
-            columns: ["lead_id"]
-            isOneToOne: false
-            referencedRelation: "leads_with_status"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
-      lead_responses_complete: {
-        Row: {
-          company_name: string | null
-          confirmation_status: string | null
-          lead_id: number | null
-          lead_last_updated: string | null
-          lead_status: string | null
-          leadership_contact_email: string | null
-          relationship_category: string | null
-          relationship_score: number | null
-          relationship_strength: string | null
-          response_id: string | null
-          response_status: string | null
-          response_submitted_at: string | null
-          sdr_name: string | null
-          stakeholder_comment: string | null
-          stakeholder_email: string | null
-          target_lead_linkedin_url: string | null
-          target_lead_name: string | null
-          target_lead_title: string | null
-        }
-        Relationships: []
-      }
-      lead_responses_summary: {
-        Row: {
-          average_score: number | null
-          company_name: string | null
-          highest_score: number | null
-          latest_comment: string | null
-          latest_respondent: string | null
-          latest_response_date: string | null
-          latest_score: number | null
-          lead_id: number | null
-          lead_last_updated: string | null
-          lead_status: string | null
-          leadership_contact_email: string | null
-          lowest_score: number | null
-          relationship_summary: string | null
-          sdr_name: string | null
-          target_lead_name: string | null
-          target_lead_title: string | null
-          total_responses: number | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       add_column_to_table: {

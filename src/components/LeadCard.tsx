@@ -63,14 +63,14 @@ export function LeadCard({ lead, score, comment, onScoreChange, onCommentChange 
           <Label className="text-base font-medium mb-4 block">
             What is your relationship strength with {lead.name}?
           </Label>
-          <RadioGroup value={score} onValueChange={onScoreChange} className="space-y-3">
+          <RadioGroup value={score} onValueChange={onScoreChange} className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {relationshipOptions.map((option) => (
-              <div key={option.value} className="flex items-start space-x-3">
+              <div key={option.value} className="flex items-start space-x-2 p-3 border rounded-lg hover:bg-accent/50 transition-colors">
                 <RadioGroupItem value={option.value} id={`${lead.id}-${option.value}`} className="mt-1" />
                 <div className="flex-1">
                   <Label
                     htmlFor={`${lead.id}-${option.value}`}
-                    className="text-sm font-medium cursor-pointer"
+                    className="text-sm font-medium cursor-pointer block"
                   >
                     {option.label}
                   </Label>
