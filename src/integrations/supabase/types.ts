@@ -14,39 +14,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      final_combined_stakeholder_responses: {
-        Row: {
-          comment: string | null
-          company_name: string | null
-          leadership_name: string | null
-          relationship_score: string | null
-          sdr_name: string | null
-          target_lead_linkedin_url: string | null
-          target_lead_name: string | null
-          target_lead_title: string | null
-        }
-        Insert: {
-          comment?: string | null
-          company_name?: string | null
-          leadership_name?: string | null
-          relationship_score?: string | null
-          sdr_name?: string | null
-          target_lead_linkedin_url?: string | null
-          target_lead_name?: string | null
-          target_lead_title?: string | null
-        }
-        Update: {
-          comment?: string | null
-          company_name?: string | null
-          leadership_name?: string | null
-          relationship_score?: string | null
-          sdr_name?: string | null
-          target_lead_linkedin_url?: string | null
-          target_lead_name?: string | null
-          target_lead_title?: string | null
-        }
-        Relationships: []
-      }
       lead_stakeholder_combined: {
         Row: {
           company_name: string | null
@@ -166,7 +133,19 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      final_combined_stakeholder_responses: {
+        Row: {
+          comment: string | null
+          company_name: string | null
+          leadership_name: string | null
+          relationship_score: string | null
+          sdr_name: string | null
+          target_lead_linkedin_url: string | null
+          target_lead_name: string | null
+          target_lead_title: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       add_column_to_table: {
