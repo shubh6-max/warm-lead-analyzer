@@ -14,10 +14,43 @@ export type Database = {
   }
   public: {
     Tables: {
+      final_combined_stakeholder_responses: {
+        Row: {
+          comment: string | null
+          company_name: string | null
+          leadership_name: string | null
+          relationship_score: string | null
+          sdr_name: string | null
+          target_lead_linkedin_url: string | null
+          target_lead_name: string | null
+          target_lead_title: string | null
+        }
+        Insert: {
+          comment?: string | null
+          company_name?: string | null
+          leadership_name?: string | null
+          relationship_score?: string | null
+          sdr_name?: string | null
+          target_lead_linkedin_url?: string | null
+          target_lead_name?: string | null
+          target_lead_title?: string | null
+        }
+        Update: {
+          comment?: string | null
+          company_name?: string | null
+          leadership_name?: string | null
+          relationship_score?: string | null
+          sdr_name?: string | null
+          target_lead_linkedin_url?: string | null
+          target_lead_name?: string | null
+          target_lead_title?: string | null
+        }
+        Relationships: []
+      }
       lead_stakeholder_combined: {
         Row: {
           company_name: string | null
-          lead_id: number | null
+          lead_id: number
           lead_status: string | null
           leadership_contact_email: string | null
           leadership_name: string | null
@@ -33,7 +66,7 @@ export type Database = {
         }
         Insert: {
           company_name?: string | null
-          lead_id?: number | null
+          lead_id: number
           lead_status?: string | null
           leadership_contact_email?: string | null
           leadership_name?: string | null
@@ -49,7 +82,7 @@ export type Database = {
         }
         Update: {
           company_name?: string | null
-          lead_id?: number | null
+          lead_id?: number
           lead_status?: string | null
           leadership_contact_email?: string | null
           leadership_name?: string | null
