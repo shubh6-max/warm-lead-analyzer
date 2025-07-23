@@ -34,7 +34,7 @@ def main():
         print(f"❌ Failed to load Excel: {e}")
         return
 
-    not_done_df = df[df["status"].str.lower() == "Not Done"]
+    not_done_df = df[df["status"] == "Not Done"]
 
     # --- Group Leads by Stakeholder Email ---
 # --- Group Leads by Stakeholder Email ---
