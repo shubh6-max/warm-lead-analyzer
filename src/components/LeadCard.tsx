@@ -1,3 +1,4 @@
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -21,11 +22,11 @@ interface LeadCardProps {
 }
 
 const relationshipOptions = [
-  { value: "1", label: "1 - Don't Know", description: "No prior interaction" },
-  { value: "2", label: "2 - Met Once", description: "Single brief encounter" },
-  { value: "3", label: "3 - Professional Acquaintance", description: "Occasional professional contact" },
-  { value: "4", label: "4 - Regular Contact", description: "Frequent professional interaction" },
-  { value: "5", label: "5 - Close Relationship", description: "Strong professional relationship" }
+  { value: "Don't Know", label: "1 - Don't Know", description: "No prior interaction" },
+  { value: "Met Once", label: "2 - Met Once", description: "Single brief encounter" },
+  { value: "Professional Acquaintance", label: "3 - Professional Acquaintance", description: "Occasional professional contact" },
+  { value: "Regular Contact", label: "4 - Regular Contact", description: "Frequent professional interaction" },
+  { value: "Close Relationship", label: "5 - Close Relationship", description: "Strong professional relationship" }
 ];
 
 export function LeadCard({ lead, score, comment, onScoreChange, onCommentChange }: LeadCardProps) {
