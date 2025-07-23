@@ -161,6 +161,17 @@ const Index = () => {
           console.error('Error saving response:', error);
           throw error;
         }
+
+        // Update lead status to "Done" in leads_with_status table
+        const { error: statusError } = await supabase
+          .from('leads_with_status')
+          .update({ status: 'Done' })
+          .eq('lead_id', parseInt(lead.id));
+
+        if (statusError) {
+          console.error('Error updating lead status:', statusError);
+          throw statusError;
+        }
       }
       
       toast({
