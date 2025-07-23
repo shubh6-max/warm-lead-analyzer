@@ -54,16 +54,43 @@ def main():
         lead_list_html = "".join(f"<li>{lead}</li>" for lead in leads)
 
         html_body = f"""
-        <html>
-        <body>
-            <p>Hi {stakeholder_email},</p>
-            <p>Please help us by rating your relationship strength with the following leads:</p>
-            <ul>{lead_list_html}</ul>
-            <p>👉 <a href="{form_link}">Click here to open your form</a></p>
-            <p>Thank you!</p>
-        </body>
-        </html>
-        """
+<html>
+<body style="font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+    <p>Hi {stakeholder_email},</p>
+
+    <p>Hope you're doing well!</p>
+
+    <p>The Scout team has implemented a new streamlined process to better leverage warm connections within our network for prospecting existing accounts. Each week, our SDRs will identify key leads they're planning to target and flag potential connections within our leadership team.</p>
+
+    <p><strong>How it works:</strong></p>
+    <ul>
+        <li>SDRs compile their target leads for the upcoming week in a centralized tracker</li>
+        <li>They identify which leaders might have existing relationships with these prospects</li>
+        <li>You’ll receive a weekly form (like this one) with the relevant leads for your review</li>
+    </ul>
+
+    <p><strong>Your weekly form is here:</strong> <a href="{form_link}">{form_link}</a></p>
+
+    <p>The form contains the names of prospects our team believes you may know or have connections with:</p>
+    <ul>{lead_list_html}</ul>
+
+    <p>Please indicate for each lead:</p>
+    <ul>
+        <li>Whether you know them (and how well)</li>
+        <li>Any relevant context that might help our approach</li>
+    </ul>
+
+    <p>This should only take 3–5 minutes of your time and will significantly boost our team's success rate with warm outreach.</p>
+
+    <p><strong>🕒 Deadline:</strong> Please respond by EOD Sunday so our SDRs can incorporate your input into their weekly planning.</p>
+
+    <p>Thanks for supporting our prospecting efforts — your network connections are invaluable to our growth!</p>
+
+    <p>Best regards,<br><strong>Scout Team</strong><br>MathCo</p>
+</body>
+</html>
+"""
+
 
         msg = MIMEMultipart("alternative")
         msg["Subject"] = "📝 Warm Outreach - Your Action Needed"
