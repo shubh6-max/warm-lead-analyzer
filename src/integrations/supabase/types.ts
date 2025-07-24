@@ -14,60 +14,11 @@ export type Database = {
   }
   public: {
     Tables: {
-      lead_stakeholder_combined: {
-        Row: {
-          company_name: string | null
-          lead_id: number
-          lead_status: string | null
-          leadership_contact_email: string | null
-          leadership_name: string | null
-          relationship_score: string | null
-          response_id: string | null
-          response_submitted_at: string | null
-          sdr_name: string | null
-          stakeholder_comment: string | null
-          stakeholder_email: string | null
-          target_lead_linkedin_url: string | null
-          target_lead_name: string | null
-          target_lead_title: string | null
-        }
-        Insert: {
-          company_name?: string | null
-          lead_id: number
-          lead_status?: string | null
-          leadership_contact_email?: string | null
-          leadership_name?: string | null
-          relationship_score?: string | null
-          response_id?: string | null
-          response_submitted_at?: string | null
-          sdr_name?: string | null
-          stakeholder_comment?: string | null
-          stakeholder_email?: string | null
-          target_lead_linkedin_url?: string | null
-          target_lead_name?: string | null
-          target_lead_title?: string | null
-        }
-        Update: {
-          company_name?: string | null
-          lead_id?: number
-          lead_status?: string | null
-          leadership_contact_email?: string | null
-          leadership_name?: string | null
-          relationship_score?: string | null
-          response_id?: string | null
-          response_submitted_at?: string | null
-          sdr_name?: string | null
-          stakeholder_comment?: string | null
-          stakeholder_email?: string | null
-          target_lead_linkedin_url?: string | null
-          target_lead_name?: string | null
-          target_lead_title?: string | null
-        }
-        Relationships: []
-      }
       leads_with_status: {
         Row: {
           company_name: string | null
+          email_status: string | null
+          form_url: string | null
           lead_id: number
           leadership_contact_email: string | null
           leadership_name: string | null
@@ -80,6 +31,8 @@ export type Database = {
         }
         Insert: {
           company_name?: string | null
+          email_status?: string | null
+          form_url?: string | null
           lead_id: number
           leadership_contact_email?: string | null
           leadership_name?: string | null
@@ -92,6 +45,8 @@ export type Database = {
         }
         Update: {
           company_name?: string | null
+          email_status?: string | null
+          form_url?: string | null
           lead_id?: number
           leadership_contact_email?: string | null
           leadership_name?: string | null
@@ -137,6 +92,7 @@ export type Database = {
         Row: {
           comment: string | null
           company_name: string | null
+          lead_id: number | null
           leadership_name: string | null
           relationship_score: string | null
           sdr_name: string | null
