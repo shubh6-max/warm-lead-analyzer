@@ -32,46 +32,7 @@ This project automates **personalized stakeholder outreach** and feedback collec
 
 ## Flow Overview
 
-### 1. Sync Leads to Supabase
-
-```mermaid
-flowchart TD
-    A["Recurrence"] --> B["List rows in table"]
-    B --> C["Apply to each row"]
-    C --> D{"Lead exists in Supabase?"}
-    D -- Yes --> E["HTTP: Update row"]
-    E --> F["Delete Excel row"]
-    D -- No --> G["Skip"]
-```
-
----
-
-### 2. Send Weekly Stakeholder Forms
-
-```mermaid
-flowchart TD
-    A["Recurrence"] --> B["HTTP (Fetch Leads)"]
-    B --> C["Select"]
-    C --> D["Deduplicated Stakeholders"]
-    D --> E["Apply to each"]
-    E --> F["Send an email (V2)"]
-    F --> G["HTTP (Log Status)"]
-```
-
----
-
-### 3. Sync Supabase Responses to SharePoint
-
-```mermaid
-flowchart TD
-    A["Recurrence"] --> B["HTTP (Get Responses)"]
-    B --> C["Parse JSON"]
-    C --> D["List rows in Excel"]
-    D --> E["Apply to each"]
-    E --> F{"If new response?"}
-    F -- Yes --> G["Add row to Excel"]
-    F -- No --> H["No Action"]
-```
+![Warm Lead Workflow](src/assets/Warm_reachout_workflow.png)
 
 ---
 
