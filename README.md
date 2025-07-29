@@ -8,7 +8,7 @@ This project automates **personalized stakeholder outreach** and feedback collec
 
 ---
 
-## * Features
+##  Features
 
 *  **Automated stakeholder email outreach** with unique form URLs.
 *  **Dynamic form generation** based on lead-stakeholder mapping.
@@ -18,7 +18,7 @@ This project automates **personalized stakeholder outreach** and feedback collec
 
 ---
 
-## 🛠️ Technologies Used
+##  Technologies Used
 
 | Layer            | Tool/Service                |
 | ---------------- | --------------------------- |
@@ -36,7 +36,7 @@ This project automates **personalized stakeholder outreach** and feedback collec
 
 ---
 
-## 🧪 Setup Instructions
+##  Setup Instructions
 
 1. **SharePoint Excel File**
 
@@ -63,14 +63,14 @@ This project automates **personalized stakeholder outreach** and feedback collec
 
 ---
 
-## 📅 Scheduling
+##  Scheduling
 
 * Each flow is triggered via `Recurrence` (set to your preferred time)
 * Emails go out only if the stakeholder has leads with `status = Not Done`
 
 ---
 
-## 🧠 Bonus Logic
+##  Bonus Logic
 
 * Only sends forms to stakeholders with **at least one open lead**
 * Logs `email_status` back to Supabase
@@ -78,7 +78,7 @@ This project automates **personalized stakeholder outreach** and feedback collec
 
 ---
 
-## 👤 Author
+##  Author
 
 **Shubham Vishwas Puranik**
 [GitHub @shubh6-max](https://github.com/shubh6-max)
