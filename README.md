@@ -2,9 +2,9 @@
 
 This project automates **personalized stakeholder outreach** and feedback collection for warm leads using Microsoft Power Automate, Excel (SharePoint), and Supabase. It enables SDR teams to:
 
-* Upload weekly warm leads.
-* Dynamically generate and send stakeholder-specific Microsoft Forms.
-* Log responses and sync them across Supabase and SharePoint.
+* `Upload weekly warm leads.`
+* `Dynamically generate and send stakeholder-specific Microsoft Forms.`
+* `Log responses and sync them across Supabase and SharePoint.`
 
 ---
 
