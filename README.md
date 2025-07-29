@@ -36,12 +36,12 @@ This project automates **personalized stakeholder outreach** and feedback collec
 
 ```mermaid
 flowchart TD
-    A["Recurrence"] --> B["List rows present in a table"]
-    B --> C["Apply to each"]
-    C --> D{"If lead exists in Supabase?"}
-    D -- Yes --> E["HTTP → Update row"]
+    A["Recurrence"] --> B["List rows in table"]
+    B --> C["Apply to each row"]
+    C --> D{"Lead exists in Supabase?"}
+    D -- Yes --> E["HTTP: Update row"]
     E --> F["Delete Excel row"]
-    D -- No --> G["No action"]
+    D -- No --> G["Skip"]
 ```
 
 ---
