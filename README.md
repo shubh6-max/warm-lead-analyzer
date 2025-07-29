@@ -1,73 +1,123 @@
-# Welcome to your Lovable project
+##  Warm Lead Whisperer Survey
 
-## Project info
+This project automates **personalized stakeholder outreach** and feedback collection for warm leads using Microsoft Power Automate, Excel (SharePoint), and Supabase. It enables SDR teams to:
 
-**URL**: https://lovable.dev/projects/ac91f34e-4937-4c9e-b653-98ae6bdcb301
+* Upload weekly warm leads.
+* Dynamically generate and send stakeholder-specific Microsoft Forms.
+* Log responses and sync them across Supabase and SharePoint.
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## * Features
 
-**Use Lovable**
+*  **Automated stakeholder email outreach** with unique form URLs.
+*  **Dynamic form generation** based on lead-stakeholder mapping.
+*  **Scheduled weekly email jobs** (e.g., every Friday at 8 PM).
+*  **Logs responses** into a SharePoint Excel table.
+*  Fully no-code compatible using **Power Automate** flows and REST APIs.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ac91f34e-4937-4c9e-b653-98ae6bdcb301) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## 🛠️ Technologies Used
 
-**Use your preferred IDE**
+| Layer            | Tool/Service                |
+| ---------------- | --------------------------- |
+| Automation       | Power Automate              |
+| Backend Database | Supabase (PostgreSQL)       |
+| Storage          | Excel (SharePoint hosted)   |
+| Form Collection  | Custom React Forms          |
+| Scheduling       | Recurrence                  |
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Flow Overview
 
-Follow these steps:
+### 1. Sync Leads to Supabase
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```mermaid
+flowchart TD
+    A["Recurrence"] --> B["List rows present in a table"]
+    B --> C["Apply to each"]
+    C --> D{"If lead exists in Supabase?"}
+    D -- Yes --> E["HTTP → Update row"]
+    E --> F["Delete Excel row"]
+    D -- No --> G["No action"]
 ```
 
-**Edit a file directly in GitHub**
+---
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### 2. Send Weekly Stakeholder Forms
 
-**Use GitHub Codespaces**
+```mermaid
+flowchart TD
+    A["Recurrence"] --> B["HTTP (Fetch Leads)"]
+    B --> C["Select"]
+    C --> D["Deduplicated Stakeholders"]
+    D --> E["Apply to each"]
+    E --> F["Send an email (V2)"]
+    F --> G["HTTP (Log Status)"]
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+---
 
-## What technologies are used for this project?
+### 3. Sync Supabase Responses to SharePoint
 
-This project is built with:
+```mermaid
+flowchart TD
+    A["Recurrence"] --> B["HTTP (Get Responses)"]
+    B --> C["Parse JSON"]
+    C --> D["List rows in Excel"]
+    D --> E["Apply to each"]
+    E --> F{"If new response?"}
+    F -- Yes --> G["Add row to Excel"]
+    F -- No --> H["No Action"]
+```
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+---
 
-## How can I deploy this project?
+## 🧪 Setup Instructions
 
-Simply open [Lovable](https://lovable.dev/projects/ac91f34e-4937-4c9e-b653-98ae6bdcb301) and click on Share -> Publish.
+1. **SharePoint Excel File**
 
-## Can I connect a custom domain to my Lovable project?
+   * Store `Warm outreaches planned.xlsx` with a table named `LeadsTable`
+   * Store `Stakeholder Responses.xlsx` with a table named `FinalResponsesTable`
 
-Yes, you can!
+2. **Supabase Setup**
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+   * Tables: `leads_with_status`, `stakeholder_responses`
+   * API Key and endpoint must be set up in Power Automate's HTTP steps
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+3. **Custom React Form**
+
+   * Create one form with dynamic questions per stakeholder
+   * Form URLs are generated and sent via email
+
+4. **Power Automate Flows**
+
+   * Create and import the flows:
+
+     * `1. SyncLeadsToSupabase`
+     * `2. Send Weekly Stakeholder Forms`
+     * `3. SupabaseToSharePoint`
+
+---
+
+## 📅 Scheduling
+
+* Each flow is triggered via `Recurrence` (set to your preferred time)
+* Emails go out only if the stakeholder has leads with `status = Not Done`
+
+---
+
+## 🧠 Bonus Logic
+
+* Only sends forms to stakeholders with **at least one open lead**
+* Logs `email_status` back to Supabase
+* Updates `status = Done` in Excel once response is synced
+
+---
+
+## 👤 Author
+
+**Shubham Vishwas Puranik**
+[GitHub @shubh6-max](https://github.com/shubh6-max)
