@@ -38,15 +38,17 @@ app.get("/api/health", async (req, res) => {
 
 // --- API ROUTES ---
 
-// 1. Fetch leads for stakeholder
+// 1. Fetch leads for stakeholder (only pending ones)
 app.get("/api/leads", async (req, res) => {
   const email = req.query.email;
   if (!email) return res.status(400).json({ error: "Missing email" });
 
   try {
     const result = await pool.query(
-      `SELECT * FROM ${SCHEMA}.leads_with_status 
-       WHERE LOWER(leadership_contact_email) LIKE $1`,
+      `SELECT * 
+       FROM ${SCHEMA}.leads_with_status 
+       WHERE LOWER(leadership_contact_email) LIKE $1
+       AND status = 'Not Done'`,   // ✅ fetch only pending leads
       [`%${email.toLowerCase()}%`]
     );
     res.json(result.rows);
@@ -55,6 +57,7 @@ app.get("/api/leads", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // 2. Fetch responses for stakeholder
 app.get("/api/responses", async (req, res) => {
