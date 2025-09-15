@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { LeadCard, Lead } from "@/components/LeadCard";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import mathcoLogo from "@/assets/mathco-logo.png";
@@ -19,48 +18,23 @@ const Index = () => {
 
   useEffect(() => {
     const fetchLeads = async () => {
-      // Get email from URL params
       const urlParams = new URLSearchParams(window.location.search);
       const email = urlParams.get("email");
       setStakeholderEmail(email);
 
       if (email) {
         try {
-          // Fetch leads where the stakeholder email is in the Leadership contact email field
-          const { data: leadsData, error: leadsError } = await supabase
-            .from('leads_with_status')
-            .select('*')
-            .like('leadership_contact_email', `%${email}%`);
+          // Fetch leads for stakeholder
+          const res = await fetch(`/api/leads?email=${encodeURIComponent(email)}`);
+          if (!res.ok) throw new Error("Failed to load leads");
+          const leadsData = await res.json();
 
-          if (leadsError) {
-            console.error('Error fetching leads:', leadsError);
-            toast({
-              title: "Error",
-              description: "Failed to load leads. Please try again.",
-              variant: "destructive",
-            });
-            return;
+          // Extract stakeholder name if provided
+          if (leadsData.length > 0 && leadsData[0].leadership_name) {
+            setStakeholderName(leadsData[0].leadership_name);
           }
 
-          // Filter leads to only include those where the email exactly matches one of the semicolon-separated emails
-          const filteredLeads = (leadsData || []).filter(row => {
-            const emails = (row.leadership_contact_email || "").split(";").map(e => e.trim().toLowerCase());
-            return emails.includes(email.toLowerCase());
-          });
-
-          // Extract stakeholder name from leadership_name field
-          if (filteredLeads.length > 0) {
-            const firstLead = filteredLeads[0];
-            const emails = (firstLead.leadership_contact_email || "").split(";").map(e => e.trim().toLowerCase());
-            const names = (firstLead.leadership_name || "").split(";").map(n => n.trim());
-            const emailIndex = emails.indexOf(email.toLowerCase());
-            if (emailIndex >= 0 && emailIndex < names.length) {
-              setStakeholderName(names[emailIndex]);
-            }
-          }
-
-          // Map data to Lead interface
-          const mappedLeads: Lead[] = filteredLeads.map(row => ({
+          const mappedLeads: Lead[] = leadsData.map((row: any) => ({
             id: row.lead_id.toString(),
             name: row.target_lead_name || "",
             title: row.target_lead_title || "",
@@ -70,36 +44,27 @@ const Index = () => {
 
           setLeads(mappedLeads);
 
-          // Fetch existing responses for this stakeholder
-          const leadIds = mappedLeads.map(lead => parseInt(lead.id));
-          const { data: responsesData, error: responsesError } = await supabase
-            .from('stakeholder_responses')
-            .select('*')
-            .eq('stakeholder_email', email)
-            .in('lead_id', leadIds);
+          // Fetch existing responses
+          const leadIds = mappedLeads.map(lead => lead.id).join(",");
+          const respRes = await fetch(`/api/responses?email=${encodeURIComponent(email)}&leadIds=${leadIds}`);
+          const responsesData = respRes.ok ? await respRes.json() : [];
 
-          if (responsesError) {
-            console.error('Error fetching responses:', responsesError);
-          }
-
-          // Initialize responses with existing data
           const initialResponses: Record<string, { score: string; comment: string }> = {};
           mappedLeads.forEach(lead => {
-            const existingResponse = responsesData?.find(r => r.lead_id === parseInt(lead.id));
-            initialResponses[lead.id] = { 
-              score: existingResponse?.relationship_score || "", 
-              comment: existingResponse?.comment || "" 
+            const existingResponse = responsesData.find((r: any) => r.lead_id === parseInt(lead.id));
+            initialResponses[lead.id] = {
+              score: existingResponse?.relationship_score || "",
+              comment: existingResponse?.comment || ""
             };
           });
           setResponses(initialResponses);
-          
-          // Check if all leads have responses (user has submitted)
-          const allLeadsResponded = mappedLeads.length > 0 && mappedLeads.every(lead => 
-            responsesData?.some(r => r.lead_id === parseInt(lead.id))
-          );
+
+          const allLeadsResponded =
+            mappedLeads.length > 0 &&
+            mappedLeads.every(lead => responsesData?.some((r: any) => r.lead_id === parseInt(lead.id)));
           setHasSubmitted(allLeadsResponded);
         } catch (error) {
-          console.error('Error:', error);
+          console.error("Error fetching leads:", error);
           toast({
             title: "Error",
             description: "Failed to load leads. Please try again.",
@@ -128,7 +93,6 @@ const Index = () => {
   };
 
   const handleSubmit = async () => {
-    // Validate all leads have scores
     const missingScores = leads.filter(lead => !responses[lead.id]?.score);
     if (missingScores.length > 0) {
       toast({
@@ -140,49 +104,43 @@ const Index = () => {
     }
 
     setIsSubmitting(true);
-    
+
     try {
-      // Save responses to stakeholder_responses table
       for (const lead of leads) {
         const response = responses[lead.id];
-        
-        const { error } = await supabase
-          .from('stakeholder_responses')
-          .upsert({
+
+        // Save response
+        const saveRes = await fetch("/api/responses", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
             lead_id: parseInt(lead.id),
             stakeholder_email: stakeholderEmail,
             relationship_score: response.score,
             comment: response.comment || null
-          }, {
-            onConflict: 'lead_id,stakeholder_email'
-          });
+          }),
+        });
 
-        if (error) {
-          console.error('Error saving response:', error);
-          throw error;
-        }
+        if (!saveRes.ok) throw new Error("Failed to save response");
 
-        // Update lead status to "Done" in leads_with_status table
-        const { error: statusError } = await supabase
-          .from('leads_with_status')
-          .update({ status: 'Done' })
-          .eq('lead_id', parseInt(lead.id));
+        // Mark lead as Done
+        const statusRes = await fetch(`/api/leads/${lead.id}/status`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ status: "Done" }),
+        });
 
-        if (statusError) {
-          console.error('Error updating lead status:', statusError);
-          throw statusError;
-        }
+        if (!statusRes.ok) throw new Error("Failed to update lead status");
       }
-      
+
       toast({
         title: "Responses Recorded",
         description: "✅ Your responses have been recorded. Thank you!",
       });
 
-      // Mark as submitted to prevent form from showing again
       setHasSubmitted(true);
     } catch (error) {
-      console.error('Submit error:', error);
+      console.error("Submit error:", error);
       toast({
         title: "Error",
         description: "Failed to submit responses. Please try again.",
@@ -231,7 +189,6 @@ const Index = () => {
     );
   }
 
-  // If user has already submitted all responses, show thank you message
   if (hasSubmitted) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -246,14 +203,13 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <div className="bg-card shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <img 
-                src={mathcoLogo} 
-                alt="MathCo Logo" 
+              <img
+                src={mathcoLogo}
+                alt="MathCo Logo"
                 className="h-12 bg-white p-2 rounded-lg shadow-sm"
               />
               <div>
@@ -265,7 +221,6 @@ const Index = () => {
         </div>
       </div>
 
-      {/* Content */}
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8">
           <p className="text-lg text-muted-foreground">
@@ -288,7 +243,7 @@ const Index = () => {
         </div>
 
         <div className="mt-8 flex justify-center">
-          <Button 
+          <Button
             onClick={handleSubmit}
             disabled={isSubmitting}
             size="lg"
