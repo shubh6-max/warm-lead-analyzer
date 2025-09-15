@@ -46,4 +46,4 @@ jobs:
           app-name: 'app-exc-to-exc'
           slot-name: 'Production'
           package: .
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_B3665123BB3F40A0AD4FD077AE27B39A }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_4EC3CE975A5A42859834E0C1EB4F1316 }}
