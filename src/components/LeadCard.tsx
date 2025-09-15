@@ -85,7 +85,7 @@ export function LeadCard({ lead, score, comment, onScoreChange, onCommentChange 
         {/* Comments */}
         <div>
           <Label htmlFor={`${lead.id}-comment`} className="text-base font-medium mb-2 block">
-            Add any details that might help us understand your relationship with {lead.name} (optional)
+            Add any details that might help us understand your relationship with {lead.name}
           </Label>
           <Textarea
             id={`${lead.id}-comment`}
